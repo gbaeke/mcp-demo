@@ -23,10 +23,18 @@ git clone <repository-url>
 cd <repository-name>
 ```
 
-2. Create a virtual environment and activate it:
+2. Create a virtual environment and activate it.
+
+I use uv to create and activate the virtual environment. Install it on macOS with Homebrew:
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+brew install uv
+```
+
+Create and activate the virtual environment:
+
+```bash
+uv venv
 ```
 
 3. Install dependencies using uv:
@@ -51,16 +59,24 @@ My file looks like this:
 {
     "mcpServers": {
         "search": {
-            "command": "/usr/local/bin/uv",
+            "command": "<path-to-uv>",
             "args": [
                 "--directory",
-                "/Users/geertbaeke/projects/mcp-demo",
+                "<path-to-project>",
                 "run",
                 "main.py"
             ]
         }
     }
 }
+```
+
+## Use the server in Cursor
+
+Use the following command when adding the server:
+
+```
+<path-to-uv> --directory <path-to-project> run main.py
 ```
 
 ### Available Tools
