@@ -41,11 +41,26 @@ SERPER_API_KEY=your_api_key_here
 
 ## Usage
 
-### Starting the Server
+### Use the server in Claude Desktop
 
-Run the server:
-```bash
-python main.py
+Edit the following file: claude_desktop_config.json (use Developer Settings in Claude Desktop to find this file)
+
+My file looks like this:
+
+```json
+{
+    "mcpServers": {
+        "search": {
+            "command": "/usr/local/bin/uv",
+            "args": [
+                "--directory",
+                "/Users/geertbaeke/projects/mcp-demo",
+                "run",
+                "main.py"
+            ]
+        }
+    }
+}
 ```
 
 ### Available Tools
