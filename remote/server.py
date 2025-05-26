@@ -79,8 +79,18 @@ def search(query: str) -> str:
         if not organic_results:
             return "No results found for the query"
             
-        # Return organic results
-        return json.dumps(organic_results, indent=2)
+        # Return organic results - using smaller chunks for better streaming compatibility
+        # Format as a simple string instead of large JSON object
+        formatted_results = []
+        for idx, result in enumerate(organic_results):
+            formatted_results.append(f"Result {idx+1}:")
+            formatted_results.append(f"Title: {result.get('title', 'No title')}")
+            formatted_results.append(f"Link: {result.get('link', 'No link')}")
+            formatted_results.append(f"Snippet: {result.get('snippet', 'No snippet')}")
+            formatted_results.append("")  # Empty line between results
+        
+        # Join all parts with newlines for better streaming
+        return "\n".join(formatted_results)
         
     except requests.exceptions.RequestException as e:
         error_msg = f"Error making API request: {str(e)}"
@@ -104,7 +114,6 @@ if __name__ == "__main__":
         transport="streamable-http",
         host="0.0.0.0",
         port=8000,
-        path="/mcp",
-        timeout_keep_alive=120  # Increase keep-alive timeout for better streaming support
+        path="/mcp"
     ) 
     

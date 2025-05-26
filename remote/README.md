@@ -126,21 +126,38 @@ mcp.run(
 )
 ```
 
-## Security Considerations
+## OpenAI API Compatibility
 
-When deploying remotely:
-- Use HTTPS in production
-- Implement authentication if needed
-- Consider rate limiting
-- Validate all inputs
-- Use environment variables for sensitive data 
+When using the remote MCP server with the OpenAI API (particularly the streaming responses), keep these points in mind:
 
+1. **Use Streamable-HTTP Transport**: Always use the `streamable-http` transport (not SSE) for better compatibility with OpenAI's streaming responses.
+   
+2. **Response Formatting**: The server formats search results as streamable text instead of large JSON objects to ensure better compatibility with OpenAI's streaming response handling.
+   
+3. **Chunked Transfer**: OpenAI's API uses chunked transfer encoding for streaming responses, which works well with the streamable-http transport.
 
-## Testing with MCP Inspector
+Example OpenAI client configuration:
 
-Run `npx @modelcontextprotocol/inspector' and open the web ui. In the UI:
+```python
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+resp = client.responses.create(
+    model="gpt-4.1",
+    tools=[
+        {
+            "type": "mcp",
+            "server_label": "search",
+            "server_url": "http://localhost:8000/mcp",  # Use your server URL here
+            "require_approval": "never",
+        },
+    ],
+    input="Your question here",
+)
+```
 
-- set transport to `streamable-http`
-- set url to `http://localhost:8000/mcp`
+### Troubleshooting
 
-Go to tools and list them. The search tool should be listed and you can call it.
+If you experience issues with OpenAI responses:
+
+1. Ensure your FastMCP library is updated to the latest version
+2. Check that responses are properly formatted for streaming
+3. Keep individual responses small and streamable rather than large JSON blobs
