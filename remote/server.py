@@ -79,18 +79,19 @@ def search(query: str) -> str:
         if not organic_results:
             return "No results found for the query"
             
-        # Return organic results - using smaller chunks for better streaming compatibility
-        # Format as a simple string instead of large JSON object
-        formatted_results = []
-        for idx, result in enumerate(organic_results):
-            formatted_results.append(f"Result {idx+1}:")
-            formatted_results.append(f"Title: {result.get('title', 'No title')}")
-            formatted_results.append(f"Link: {result.get('link', 'No link')}")
-            formatted_results.append(f"Snippet: {result.get('snippet', 'No snippet')}")
-            formatted_results.append("")  # Empty line between results
+        # Format as plain text for optimal OpenAI responses API compatibility
+        # Using extremely simple format to avoid any streaming/parsing issues
+        result_text = f"Found {len(organic_results)} results for '{query}':\n\n"
         
-        # Join all parts with newlines for better streaming
-        return "\n".join(formatted_results)
+        for idx, result in enumerate(organic_results):
+            # Add each piece of information as a separate line for better streaming
+            result_text += f"Result {idx+1}: {result.get('title', 'No title')}\n"
+            result_text += f"{result.get('link', 'No link')}\n"
+            result_text += f"{result.get('snippet', 'No snippet')}\n\n"
+        
+        # Return simple text format that's easier for streaming
+        print(f"Returning {len(result_text)} characters of search results", file=sys.stderr)
+        return result_text.strip()
         
     except requests.exceptions.RequestException as e:
         error_msg = f"Error making API request: {str(e)}"
@@ -114,6 +115,8 @@ if __name__ == "__main__":
         transport="streamable-http",
         host="0.0.0.0",
         port=8000,
-        path="/mcp"
+        path="/mcp",
+        chunk_size=100,  # Small chunks for better streaming
+        stream_mode="line"  # Stream line by line
     ) 
     

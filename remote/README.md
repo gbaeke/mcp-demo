@@ -136,9 +136,24 @@ When using the remote MCP server with the OpenAI API (particularly the streaming
    
 3. **Chunked Transfer**: OpenAI's API uses chunked transfer encoding for streaming responses, which works well with the streamable-http transport.
 
-Example OpenAI client configuration:
+4. **Testing with Dev Tunnel**: When testing with the OpenAI responses API, you need to expose your local server using a dev tunnel:
+   ```bash
+   # Install dev tunnel if needed
+   # npm install -g @devtunnels/cli
+   
+   # Create a tunnel and expose your local server
+   devtunnel host -p 8000 --protocol https
+   
+   # The command will output a URL like: https://xxxxx-xxxx-xxxx.devtunnels.ms
+   # Use that URL + '/mcp' in your OpenAI client configuration
+   ```
+
+Example OpenAI client configuration with dev tunnel:
 
 ```python
+# Replace with your dev tunnel URL
+TUNNEL_URL = "https://xxxxx-xxxx-xxxx.devtunnels.ms/mcp"
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 resp = client.responses.create(
     model="gpt-4.1",
@@ -146,21 +161,45 @@ resp = client.responses.create(
         {
             "type": "mcp",
             "server_label": "search",
-            "server_url": "http://localhost:8000/mcp",  # Use your server URL here
+            "server_url": TUNNEL_URL,  # Use your dev tunnel URL here
             "require_approval": "never",
         },
     ],
     input="Your question here",
 )
+
+# Stream the response to see results come in
+for chunk in resp:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
 ```
 
-### Troubleshooting
+### Troubleshooting Session Errors
 
-If you experience issues with OpenAI responses:
+If you encounter a `{'type': 'mcp_protocol_error', 'code': 32600, 'message': 'Session terminated'}` error:
 
-1. Ensure your FastMCP library is updated to the latest version
-2. Check that responses are properly formatted for streaming
-3. Keep individual responses small and streamable rather than large JSON blobs
+1. **Check Server Logs**: Look for any error messages in the server output
+
+2. **Verify Transport Settings**: Ensure you're using `streamable-http` transport with appropriate settings:
+   ```python
+   mcp.run(
+       transport="streamable-http",
+       host="0.0.0.0",
+       port=8000,
+       path="/mcp",
+       chunk_size=100,  # Small chunks for better streaming
+       stream_mode="line"  # Stream line by line
+   )
+   ```
+
+3. **Simplify Response Format**: Ensure responses are plain text without complex formatting
+
+4. **Check Network Connectivity**: Ensure the dev tunnel is working correctly by testing with curl:
+   ```bash
+   curl -v "https://your-tunnel-url.devtunnels.ms/mcp"
+   ```
+
+5. **Update FastMCP**: Ensure you're using the latest version of FastMCP library
 
 ## Security Considerations
 
