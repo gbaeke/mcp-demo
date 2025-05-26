@@ -161,3 +161,21 @@ If you experience issues with OpenAI responses:
 1. Ensure your FastMCP library is updated to the latest version
 2. Check that responses are properly formatted for streaming
 3. Keep individual responses small and streamable rather than large JSON blobs
+
+## Security Considerations
+
+When deploying remotely:
+- Use HTTPS in production
+- Implement authentication if needed
+- Consider rate limiting
+- Validate all inputs
+- Use environment variables for sensitive data 
+
+## Testing with MCP Inspector
+
+Run `npx @modelcontextprotocol/inspector' and open the web ui. In the UI:
+
+- set transport to `streamable-http`
+- set url to `http://localhost:8000/mcp`
+
+Go to tools and list them. The search tool should be listed and you can call it.
