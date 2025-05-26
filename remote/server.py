@@ -101,10 +101,10 @@ if __name__ == "__main__":
     # Run the server using streamable HTTP transport
     # This makes it accessible over HTTP instead of stdio
     mcp.run(
-        # transport="streamable-http",  # this is new and is preferred over sse
-        transport="sse",
+        transport="streamable-http",
         host="0.0.0.0",
         port=8000,
-        path="/mcp"
+        path="/mcp",
+        timeout_keep_alive=120  # Increase keep-alive timeout for better streaming support
     ) 
     

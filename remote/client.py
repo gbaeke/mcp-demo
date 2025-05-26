@@ -10,8 +10,8 @@ async def test_remote_server():
     
     # Connect to the remote server via HTTP
     # The server should be running on http://localhost:8000/mcp
-    # client = Client("http://localhost:8000/mcp")
-    client = Client("https://d578-2a02-1812-c35-b400-3d2f-e5a3-be22-511f.ngrok-free.app/mcp")
+    client = Client("http://localhost:8000/mcp")
+    # client = Client("https://d578-2a02-1812-c35-b400-3d2f-e5a3-be22-511f.ngrok-free.app/mcp")
     
     try:
         async with client:
