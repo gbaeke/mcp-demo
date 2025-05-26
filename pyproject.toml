@@ -1,0 +1,14 @@
+[project]
+name = "mcp-demo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+   "bs4>=0.0.2",
+   "fastmcp>=0.4.1",
+   "openai>=1.66.3",
+   "openai-agents>=0.0.16",
+   "requests>=2.32.3",
+   "rich>=14.0.0",
+]
